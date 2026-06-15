@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile
 from pathlib import Path
 from fastapi import HTTPException
+from app.services.pdf_service import extract_text
 
 router = APIRouter()
 
@@ -18,4 +19,6 @@ async def upload_file(file: UploadFile):
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    return {"filename": file.filename}
+    text = extract_text(str(file_path))
+
+    return {"filename": file.filename, "characters": len(text)}
