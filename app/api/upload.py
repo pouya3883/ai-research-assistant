@@ -24,6 +24,15 @@ async def upload_file(file: UploadFile):
 
     chunks = chunk_text(text)
 
+    chunks_dir = Path("data/chunks")
+    chunks_dir.mkdir(parents=True, exist_ok=True)
+
+    for index, chunk in enumerate(chunks):
+        chunk_file = chunks_dir / f"{file_path.stem}_chunk_{index}.txt"
+
+        with open(chunk_file, "w", encoding="utf-8") as f:
+            f.write(chunk)
+
     processed_dir = Path("data/processed")
     processed_dir.mkdir(parents=True, exist_ok=True)
 
