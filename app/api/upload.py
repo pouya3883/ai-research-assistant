@@ -21,4 +21,16 @@ async def upload_file(file: UploadFile):
 
     text = extract_text(str(file_path))
 
-    return {"filename": file.filename, "characters": len(text)}
+    processed_dir = Path("data/processed")
+    processed_dir.mkdir(parents=True, exist_ok=True)
+
+    text_file = processed_dir / f"{file_path.stem}.txt"
+
+    with open(text_file, "w", encoding="utf-8") as f:
+        f.write(text)
+
+    return {
+        "filename": file.filename,
+        "characters": len(text),
+        "text_file": text_file.name,
+    }
