@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import HTTPException
 from app.services.pdf_service import extract_text
 from app.services.text_chunker import chunk_text
+import uuid
 
 router = APIRouter()
 
@@ -15,7 +16,10 @@ async def upload_file(file: UploadFile):
     upload_dir = Path("data/uploads")
     upload_dir.mkdir(parents=True, exist_ok=True)
 
-    file_path = upload_dir / file.filename
+    document_id = str(uuid.uuid4())
+
+    stored_filename = f"{document_id}_{file.filename}"
+    file_path = upload_dir / stored_filename
 
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
@@ -42,6 +46,7 @@ async def upload_file(file: UploadFile):
         f.write(text)
 
     return {
+        "document_id": document_id,
         "filename": file.filename,
         "characters": len(text),
         "chunks": len(chunks),
