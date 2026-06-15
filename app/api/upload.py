@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile
 from pathlib import Path
 from fastapi import HTTPException
 from app.services.pdf_service import extract_text
+from app.services.text_chunker import chunk_text
 
 router = APIRouter()
 
@@ -21,6 +22,8 @@ async def upload_file(file: UploadFile):
 
     text = extract_text(str(file_path))
 
+    chunks = chunk_text(text)
+
     processed_dir = Path("data/processed")
     processed_dir.mkdir(parents=True, exist_ok=True)
 
@@ -32,5 +35,5 @@ async def upload_file(file: UploadFile):
     return {
         "filename": file.filename,
         "characters": len(text),
-        "text_file": text_file.name,
+        "chunks": len(chunks),
     }
