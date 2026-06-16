@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from app.services.pdf_service import extract_text
 from app.services.text_chunker import chunk_text
 import uuid
+from app.services.document_registry import load_documents, save_documents
 
 router = APIRouter()
 
@@ -44,6 +45,19 @@ async def upload_file(file: UploadFile):
 
     with open(text_file, "w", encoding="utf-8") as f:
         f.write(text)
+
+    documents = load_documents()
+
+    documents.append(
+        {
+            "document_id": document_id,
+            "filename": file.filename,
+            "characters": len(text),
+            "chunks": len(chunks),
+        }
+    )
+
+    save_documents(documents)
 
     return {
         "document_id": document_id,
