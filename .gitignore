@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 .env
+data/uploads/
+data/processed
+data/chunks
