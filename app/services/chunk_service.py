@@ -19,3 +19,16 @@ def get_document_chunks(document_id: str):
             chunks.append({"filename": file.name, "content": f.read()})
 
     return chunks
+
+
+def search_chunks(query: str):
+    results = []
+
+    for file in CHUNKS_DIR.glob("*.txt"):
+        with open(file, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        if query.lower() in content.lower():
+            results.append({"filename": file.name, "content": content})
+
+    return results
