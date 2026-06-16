@@ -22,3 +22,15 @@ def get_document(document_id: str):
             return document
 
     return None
+
+
+def delete_document(document_id: str):
+    documents = load_documents()
+
+    updated_documents = [
+        document for document in documents if document["document_id"] != document_id
+    ]
+
+    save_documents(updated_documents)
+
+    return len(updated_documents) != len(documents)
