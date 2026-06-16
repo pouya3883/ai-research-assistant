@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.services.document_registry import load_documents, get_document
 from fastapi import HTTPException
+from app.services.chunk_service import get_document_chunks
 
 router = APIRouter()
 
@@ -18,3 +19,13 @@ def get_document_by_id(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
 
     return document
+
+
+@router.get("/documents/{document_id}/chunks")
+def get_chunks(document_id: str):
+    document = get_document(document_id)
+
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    return get_document_chunks(document_id)
