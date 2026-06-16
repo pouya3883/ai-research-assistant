@@ -43,5 +43,5 @@ def remove_document(document_id: str):
 
 
 @router.get("/search")
-def search(query: str):
-    return search_chunks(query)
+def search(query: str, limit: int = 5):
+    return search_chunks(query, limit)

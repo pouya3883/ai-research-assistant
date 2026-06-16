@@ -21,7 +21,7 @@ def get_document_chunks(document_id: str):
     return chunks
 
 
-def search_chunks(query: str):
+def search_chunks(query: str, limit: int = 5):
     results = []
 
     for file in CHUNKS_DIR.glob("*.txt"):
@@ -31,4 +31,4 @@ def search_chunks(query: str):
         if query.lower() in content.lower():
             results.append({"filename": file.name, "content": content})
 
-    return results
+    return results[:limit]
