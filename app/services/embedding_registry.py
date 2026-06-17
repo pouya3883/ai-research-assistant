@@ -1,6 +1,6 @@
 from pathlib import Path
 
-EMBEDDINGS_FILE = Path("data/embeddings.json")
+EMBEDDINGS_FILE = Path("data/metadata/embeddings.json")
 
 
 def load_embeddings():
