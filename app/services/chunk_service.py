@@ -1,4 +1,5 @@
 from pathlib import Path
+from app.models.search import SearchResult
 
 CHUNKS_DIR = Path("data/chunks")
 
@@ -34,14 +35,14 @@ def search_chunks(query: str, limit: int = 5):
 
         if query.lower() in content.lower():
             results.append(
-                {
-                    "filename": file.name,
-                    "content": content,
-                    "score": count_matches(content, query),
-                }
+                SearchResult(
+                    filename=file.name,
+                    content=content,
+                    score=count_matches(content, query),
+                )
             )
 
-    results.sort(key=lambda result: result["score"], reverse=True)
+    results.sort(key=lambda result: result.score, reverse=True)
 
     return results[:limit]
 
@@ -53,13 +54,13 @@ def search_document_chunks(document_id: str, query: str, limit: int = 5):
     for chunk in chunks:
         if query.lower() in chunk["content"].lower():
             results.append(
-                {
-                    "filename": chunk["filename"],
-                    "content": chunk["content"],
-                    "score": count_matches(chunk["content"], query),
-                }
+                SearchResult(
+                    filename=chunk["filename"],
+                    content=chunk["content"],
+                    score=count_matches(chunk["content"], query),
+                )
             )
 
-    results.sort(key=lambda result: result["score"], reverse=True)
+    results.sort(key=lambda result: result.score, reverse=True)
 
     return results[:limit]
