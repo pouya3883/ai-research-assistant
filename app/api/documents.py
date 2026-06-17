@@ -34,6 +34,11 @@ def get_chunks(document_id: str):
 
 @router.get("/documents/{document_id}/search")
 def search_document(document_id: str, query: str, limit: int = 5):
+    document = get_document(document_id)
+
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+
     return search_document_chunks(document_id, query, limit)
 
 
