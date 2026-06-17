@@ -47,4 +47,19 @@ def search_chunks(query: str, limit: int = 5):
 
 
 def search_document_chunks(document_id: str, query: str, limit: int = 5):
-    pass
+    results = []
+    chunks = get_document_chunks(document_id)
+
+    for chunk in chunks:
+        if query.lower() in chunk["content"].lower():
+            results.append(
+                {
+                    "filename": chunk["filename"],
+                    "content": chunk["content"],
+                    "score": count_matches(chunk["content"], query),
+                }
+            )
+
+    results.sort(key=lambda result: result["score"], reverse=True)
+
+    return results[:limit]

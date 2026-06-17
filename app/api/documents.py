@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.services.document_registry import load_documents, get_document, delete_document
 from fastapi import HTTPException
 from app.services.chunk_service import get_document_chunks
-from app.services.chunk_service import search_chunks
+from app.services.chunk_service import search_chunks, search_document_chunks
 
 router = APIRouter()
 
@@ -30,6 +30,11 @@ def get_chunks(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
 
     return get_document_chunks(document_id)
+
+
+@router.get("/documents/{document_id}/search")
+def search_document(document_id: str, query: str, limit: int = 5):
+    return search_document_chunks(document_id, query, limit)
 
 
 @router.delete("/documents/{document_id}")
