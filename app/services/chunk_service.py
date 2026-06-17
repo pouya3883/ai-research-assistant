@@ -44,3 +44,7 @@ def search_chunks(query: str, limit: int = 5):
     results.sort(key=lambda result: result["score"], reverse=True)
 
     return results[:limit]
+
+
+def search_document_chunks(document_id: str, query: str, limit: int = 5):
+    pass
