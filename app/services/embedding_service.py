@@ -1,7 +1,8 @@
 from app.models.embedding import DocumentEmbedding
 from sentence_transformers import SentenceTransformer
 from app.services.chunk_service import get_document_chunks
-from app.services.embedding_registry import add_embedding
+from app.services.embedding_registry import add_embedding, get_document_embeddings
+from sentence_transformers import util
 
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -27,3 +28,37 @@ def generate_document_embeddings(document_id: str):
         )
 
         add_embedding(embedding)
+
+
+def create_query_embedding(query: str):
+    return embedding_model.encode(query).tolist()
+
+
+def calculate_similarity(query_embedding, chunk_embedding):
+    similarity = util.cos_sim(query_embedding, chunk_embedding)
+
+    return similarity.item()
+
+
+def semantic_search_document(document_id, query, limit: int = 5):
+    results = []
+    query_embedding = create_query_embedding(query)
+    document_embeddings = get_document_embeddings(document_id)
+    chunks = get_document_chunks(document_id)
+
+    chunk_map = {chunk["filename"]: chunk["content"] for chunk in chunks}
+
+    for embedding in document_embeddings:
+        score = calculate_similarity(query_embedding, embedding["embedding"])
+
+        results.append(
+            {
+                "chunk_filename": embedding["chunk_filename"],
+                "content": chunk_map[embedding["chunk_filename"]],
+                "score": score,
+            }
+        )
+
+    results.sort(key=lambda result: result["score"], reverse=True)
+
+    return results[:limit]
