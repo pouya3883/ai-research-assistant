@@ -3,6 +3,7 @@ from app.services.document_registry import load_documents, get_document, delete_
 from fastapi import HTTPException
 from app.services.chunk_service import get_document_chunks
 from app.services.chunk_service import search_chunks, search_document_chunks
+from app.services.embedding_service import semantic_search_document
 
 router = APIRouter()
 
@@ -50,6 +51,15 @@ def remove_document(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
 
     return {"message": "Document deleted"}
+
+
+@router.get("/documents/{document_id}/semantic-search")
+def semantic_search(document_id: str, query: str, limit: int = 5):
+    results = semantic_search_document(
+        document_id=document_id, query=query, limit=limit
+    )
+
+    return results
 
 
 @router.get("/search")
