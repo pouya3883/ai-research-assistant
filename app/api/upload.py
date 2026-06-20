@@ -5,6 +5,7 @@ from app.services.pdf_service import extract_text
 from app.services.text_chunker import chunk_text
 import uuid
 from app.services.document_registry import load_documents, save_documents
+from app.services.embedding_service import generate_document_embeddings
 
 router = APIRouter()
 
@@ -58,6 +59,8 @@ async def upload_file(file: UploadFile):
     )
 
     save_documents(documents)
+
+    generate_document_embeddings(document_id)
 
     return {
         "document_id": document_id,
