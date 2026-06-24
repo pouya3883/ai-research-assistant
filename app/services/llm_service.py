@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from google import genai
-from app.services.embedding_service import build_context
+from app.services.embedding_service import semantic_search_document
 
 load_dotenv()
 
@@ -31,8 +31,12 @@ def generate_answer(question: str, contexts: list[str]):
 
 
 def answer_question(document_id: str, question: str):
-    contexts = build_context(document_id=document_id, query=question)
+    results = semantic_search_document(document_id=document_id, query=question)
+
+    contexts = [result["content"] for result in results]
+
+    sources = [result["chunk_filename"] for result in results]
 
     answer = generate_answer(question=question, contexts=contexts)
 
-    return answer
+    return {"answer": answer, "sources": sources}

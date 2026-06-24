@@ -70,6 +70,6 @@ def search(query: str, limit: int = 5):
 
 @router.get("/documents/{document_id}/ask")
 def ask_question(document_id: str, question: str):
-    answer = answer_question(document_id=document_id, question=question)
+    result = answer_question(document_id=document_id, question=question)
 
-    return {"answer": answer}
+    return result
