@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from app.services.chunk_service import get_document_chunks
 from app.services.chunk_service import search_chunks, search_document_chunks
 from app.services.embedding_service import semantic_search_document
+from app.services.llm_service import answer_question
 
 router = APIRouter()
 
@@ -65,3 +66,10 @@ def semantic_search(document_id: str, query: str, limit: int = 5):
 @router.get("/search")
 def search(query: str, limit: int = 5):
     return search_chunks(query, limit)
+
+
+@router.get("/documents/{document_id}/ask")
+def ask_question(document_id: str, question: str):
+    answer = answer_question(document_id=document_id, question=question)
+
+    return {"answer": answer}
