@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from app.services.embedding_service import semantic_search_document
+from app.models.answer import AnswerResponse
 
 load_dotenv()
 
@@ -39,4 +40,4 @@ def answer_question(document_id: str, question: str):
 
     answer = generate_answer(question=question, contexts=contexts)
 
-    return {"answer": answer, "sources": sources}
+    return AnswerResponse(answer=answer, sources=sources)
