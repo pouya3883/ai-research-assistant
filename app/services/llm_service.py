@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from google import genai
-from app.services.embedding_service import semantic_search_document
+from app.services.retrieval_service import retrieve_context
 from app.models.answer import AnswerResponse
 from app.services.prompt_service import build_prompt
 
@@ -18,14 +18,10 @@ def generate_answer(prompt: str):
 
 
 def answer_question(document_id: str, question: str):
-    results = semantic_search_document(document_id=document_id, query=question)
+    retrieval = retrieve_context(document_id=document_id, question=question)
 
-    contexts = [result["content"] for result in results]
-
-    sources = [result["chunk_filename"] for result in results]
-
-    prompt = build_prompt(question=question, contexts=contexts)
+    prompt = build_prompt(question=question, contexts=retrieval.contexts)
 
     answer = generate_answer(prompt=prompt)
 
-    return AnswerResponse(answer=answer, sources=sources)
+    return AnswerResponse(answer=answer, sources=retrieval.sources)
