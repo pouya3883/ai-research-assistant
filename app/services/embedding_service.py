@@ -1,7 +1,7 @@
 from app.models.embedding import DocumentEmbedding
 from sentence_transformers import SentenceTransformer
 from app.services.chunk_service import get_document_chunks
-from app.services.embedding_registry import add_embedding, get_document_embeddings
+from app.services.vector_store import add_embedding, get_document_embeddings
 from sentence_transformers import util
 
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
