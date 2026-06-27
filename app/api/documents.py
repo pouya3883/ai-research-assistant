@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.services.document_registry import load_documents, get_document, delete_document
+from app.services.document_registry import load_documents, get_document
+from app.services.document_service import delete_document
 from fastapi import HTTPException
 from app.services.chunk_service import get_document_chunks
 from app.services.chunk_service import search_chunks, search_document_chunks

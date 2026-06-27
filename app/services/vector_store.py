@@ -41,3 +41,13 @@ def get_document_embeddings(document_id: str) -> list[dict]:
         embedding for embedding in embeddings if embedding["document_id"] == document_id
     ]
     return results
+
+
+def delete_document_embeddings(document_id: str) -> None:
+    embeddings = load_embeddings()
+
+    updated = [
+        embedding for embedding in embeddings if embedding["document_id"] != document_id
+    ]
+
+    save_embeddings(updated)

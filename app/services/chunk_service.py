@@ -64,3 +64,9 @@ def search_document_chunks(document_id: str, query: str, limit: int = 5):
     results.sort(key=lambda result: result.score, reverse=True)
 
     return results[:limit]
+
+
+def delete_document_chunks(document_id: str) -> None:
+    for file in CHUNKS_DIR.glob("*.txt"):
+        if file.name.startswith(document_id):
+            file.unlink()
