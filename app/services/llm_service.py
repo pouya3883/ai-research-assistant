@@ -20,8 +20,10 @@ def generate_answer(prompt: str):
 def answer_question(document_id: str, question: str):
     retrieval = retrieve_context(document_id=document_id, question=question)
 
-    prompt = build_prompt(question=question, contexts=retrieval.contexts)
+    prompt = build_prompt(question=question, retrieval=retrieval)
 
     answer = generate_answer(prompt=prompt)
 
-    return AnswerResponse(answer=answer, sources=retrieval.sources)
+    sources = [chunk.source for chunk in retrieval.results]
+
+    return AnswerResponse(answer=answer, sources=sources)

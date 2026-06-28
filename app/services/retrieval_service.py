@@ -1,12 +1,13 @@
-from app.models.retrieval import RetrievalResult
+from app.models.retrieval import RetrievalResult, RetrievedChunk
 from app.services.embedding_service import semantic_search_document
 
 
 def retrieve_context(document_id: str, question: str) -> RetrievalResult:
-    results = semantic_search_document(document_id=document_id, query=question)
+    search_results = semantic_search_document(document_id=document_id, query=question)
 
-    contexts = [result["content"] for result in results]
+    retrieved_chunk = [
+        RetrievedChunk(content=result["content"], source=result["chunk_filename"])
+        for result in search_results
+    ]
 
-    sources = [result["chunk_filename"] for result in results]
-
-    return RetrievalResult(contexts=contexts, sources=sources)
+    return RetrievalResult(results=retrieved_chunk)

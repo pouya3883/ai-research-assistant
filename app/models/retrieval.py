@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
 
+class RetrievedChunk(BaseModel):
+    content: str
+    source: str
+
+
 class RetrievalResult(BaseModel):
-    contexts: list[str]
-    sources: list[str]
+    results: list[RetrievedChunk]
