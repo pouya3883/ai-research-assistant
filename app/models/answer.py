@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 
 
+class Citation(BaseModel):
+    id: int
+    source: str
+
+
 class AnswerResponse(BaseModel):
     answer: str
-    sources: list[str]
+    citations: list[Citation]

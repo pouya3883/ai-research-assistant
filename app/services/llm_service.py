@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from app.services.retrieval_service import retrieve_context
-from app.models.answer import AnswerResponse
+from app.models.answer import AnswerResponse, Citation
 from app.services.prompt_service import build_prompt
 
 load_dotenv()
@@ -24,6 +24,9 @@ def answer_question(document_id: str, question: str):
 
     answer = generate_answer(prompt=prompt)
 
-    sources = [chunk.source for chunk in retrieval.results]
+    citations = [
+        Citation(id=index, source=chunk.source)
+        for index, chunk in enumerate(retrieval.results, start=1)
+    ]
 
-    return AnswerResponse(answer=answer, sources=sources)
+    return AnswerResponse(answer=answer, citations=citations)
