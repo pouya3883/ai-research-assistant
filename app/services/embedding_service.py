@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer
 from app.services.chunk_service import get_document_chunks
 from app.services.vector_store import add_embedding, get_document_embeddings
 from sentence_transformers import util
+from app.models.search import SearchResult
 
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -52,14 +53,14 @@ def semantic_search_document(document_id, query, limit: int = 5):
         score = calculate_similarity(query_embedding, embedding["embedding"])
 
         results.append(
-            {
-                "chunk_filename": embedding["chunk_filename"],
-                "content": chunk_map[embedding["chunk_filename"]],
-                "score": score,
-            }
+            SearchResult(
+                filename=embedding["chunk_filename"],
+                content=chunk_map[embedding["chunk_filename"]],
+                score=score,
+            )
         )
 
-    results.sort(key=lambda result: result["score"], reverse=True)
+    results.sort(key=lambda result: result.score, reverse=True)
 
     return results[:limit]
 
@@ -69,4 +70,4 @@ def build_context(document_id: str, query: str, limit: int = 3):
         document_id=document_id, query=query, limit=limit
     )
 
-    return [result["content"] for result in results]
+    return [result.content for result in results]
