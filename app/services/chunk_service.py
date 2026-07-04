@@ -1,14 +1,15 @@
 from pathlib import Path
 from app.models.search import SearchResult
+from app.models.chunk import DocumentChunk
 
 CHUNKS_DIR = Path("data/chunks")
 
 
-def get_chunk_number(file_path):
+def get_chunk_number(file_path) -> int:
     return int(file_path.stem.split("_chunk_")[-1])
 
 
-def get_document_chunks(document_id: str):
+def get_document_chunks(document_id: str) -> list[DocumentChunk]:
     chunks = []
 
     files = sorted(
@@ -17,16 +18,16 @@ def get_document_chunks(document_id: str):
 
     for file in files:
         with open(file, "r", encoding="utf-8") as f:
-            chunks.append({"filename": file.name, "content": f.read()})
+            chunks.append(DocumentChunk(filename=file.name, content=f.read()))
 
     return chunks
 
 
-def count_matches(content: str, query: str):
+def count_matches(content: str, query: str) -> int:
     return content.lower().count(query.lower())
 
 
-def search_chunks(query: str, limit: int = 5):
+def search_chunks(query: str, limit: int = 5) -> list[SearchResult]:
     results = []
 
     for file in CHUNKS_DIR.glob("*.txt"):
@@ -47,17 +48,19 @@ def search_chunks(query: str, limit: int = 5):
     return results[:limit]
 
 
-def search_document_chunks(document_id: str, query: str, limit: int = 5):
+def search_document_chunks(
+    document_id: str, query: str, limit: int = 5
+) -> list[SearchResult]:
     results = []
     chunks = get_document_chunks(document_id)
 
     for chunk in chunks:
-        if query.lower() in chunk["content"].lower():
+        if query.lower() in chunk.content.lower():
             results.append(
                 SearchResult(
-                    filename=chunk["filename"],
-                    content=chunk["content"],
-                    score=count_matches(chunk["content"], query),
+                    filename=chunk.filename,
+                    content=chunk.content,
+                    score=count_matches(chunk.content, query),
                 )
             )
 
