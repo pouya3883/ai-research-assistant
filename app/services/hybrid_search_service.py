@@ -27,12 +27,12 @@ def hybrid_search_document(
 
     for result in bm25_results:
         if result.filename in results_by_filename:
-            results_by_filename[result.filename].keyword_score = result.score
+            results_by_filename[result.filename].bm25_score = result.score
         else:
             results_by_filename[result.filename] = HybridSearchResult(
                 filename=result.filename,
                 content=result.content,
-                keyword_score=result.score,
+                bm25_score=result.score,
             )
 
     results = list(results_by_filename.values())
