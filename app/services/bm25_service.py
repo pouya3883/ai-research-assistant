@@ -2,6 +2,7 @@ from app.models.chunk import DocumentChunk
 from app.models.search import SearchResult
 from collections import Counter
 from app.utils.text_processing import tokenize
+from app.utils.query_processor import preprocess_query
 from math import log
 
 K1 = 1.5
@@ -15,7 +16,7 @@ def bm25_search(
 
     idf, avg_document_length = _compute_idf(corpus)
 
-    query_tokens = tokenize(query)
+    query_tokens = preprocess_query(query)
 
     results = []
 
