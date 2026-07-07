@@ -47,15 +47,17 @@ def semantic_search_document(document_id, query, limit: int = 5):
     document_embeddings = get_document_embeddings(document_id)
     chunks = get_document_chunks(document_id)
 
-    chunk_map = {chunk.filename: chunk.content for chunk in chunks}
+    chunk_map = {chunk.filename: chunk for chunk in chunks}
 
     for embedding in document_embeddings:
         score = calculate_similarity(query_embedding, embedding["embedding"])
 
+        chunk = chunk_map[embedding["chunk_filename"]]
+
         results.append(
             SearchResult(
-                filename=embedding["chunk_filename"],
-                content=chunk_map[embedding["chunk_filename"]],
+                filename=chunk.filename,
+                content=chunk.content,
                 score=score,
             )
         )

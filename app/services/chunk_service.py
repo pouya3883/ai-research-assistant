@@ -16,9 +16,19 @@ def get_document_chunks(document_id: str) -> list[DocumentChunk]:
         CHUNKS_DIR.glob(f"{document_id}_*_chunk_*.txt"), key=get_chunk_number
     )
 
-    for file in files:
+    total_chunks = len(files)
+
+    for chunk_index, file in enumerate(files):
         with open(file, "r", encoding="utf-8") as f:
-            chunks.append(DocumentChunk(filename=file.name, content=f.read()))
+            chunks.append(
+                DocumentChunk(
+                    document_id=document_id,
+                    filename=file.name,
+                    chunk_index=chunk_index,
+                    total_chunks=total_chunks,
+                    content=f.read(),
+                )
+            )
 
     return chunks
 
