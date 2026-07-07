@@ -1,6 +1,7 @@
+# Evaluation for LPI-Learning-Material-101-500-en
 from app.services.hybrid_search_service import hybrid_search_document
 
-DOCUMENT_ID = "f73a2422-e4f6-4a71-b56e-abb0da5d830f"
+DOCUMENT_ID = ""
 TEST_QUERIES = [
     "grub boot",
     "linux permissions",

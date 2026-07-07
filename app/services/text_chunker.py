@@ -1,6 +1,6 @@
 import re
 
-from app.core.config import CHUNK_SIZE
+from app.core.config import CHUNK_SIZE, CHUNK_OVERLAP
 
 PARAGRAPH_PATTERN = re.compile(r"\n\s*\n")
 SENTENCE_PATTERN = re.compile(r"(?<=[.!?])\s+")
@@ -100,6 +100,50 @@ def _merge_paragraphs(paragraphs: list[str], chunk_size: int) -> list[str]:
     return chunks
 
 
+def _apply_overlap(
+    chunks: list[str],
+    overlap_size: int,
+) -> list[str]:
+    """
+    Apply sentence-aware overlap between consecutive chunks.
+    """
+    if len(chunks) <= 1:
+        return chunks
+
+    overlapped_chunks = [chunks[0]]
+
+    for index in range(1, len(chunks)):
+        previous_chunk = chunks[index - 1]
+
+        chunk = chunks[index]
+
+        previous_sentences = _split_sentences(previous_chunk)
+
+        overlap_sentences: list[str] = []
+
+        overlap_length = 0
+
+        for sentence in reversed(previous_sentences):
+            sentence_length = len(sentence) + 1
+
+            if overlap_sentences and overlap_length + sentence_length > overlap_size:
+                break
+
+            overlap_sentences.insert(0, sentence)
+            overlap_length += sentence_length
+
+        merged_chunk = " ".join(overlap_sentences)
+
+        if merged_chunk:
+            merged_chunk += " "
+
+        merged_chunk += chunk
+
+        overlapped_chunks.append(merged_chunk)
+
+    return overlapped_chunks
+
+
 def chunk_text(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
     """
     Split text into paragraph-aware chunks.
@@ -109,4 +153,6 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
 
     paragraphs = _split_paragraphs(text)
 
-    return _merge_paragraphs(paragraphs, chunk_size)
+    chunks = _merge_paragraphs(paragraphs, chunk_size)
+
+    return _apply_overlap(chunks, CHUNK_OVERLAP)
