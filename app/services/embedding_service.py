@@ -8,7 +8,9 @@ from app.models.search import SearchResult
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def create_embedding(document_id: str, chunk_filename: str, content: str):
+def create_embedding(
+    document_id: str, chunk_filename: str, content: str
+) -> DocumentEmbedding:
     embedding_vector = embedding_model.encode(content).tolist()
 
     return DocumentEmbedding(
@@ -31,11 +33,13 @@ def generate_document_embeddings(document_id: str):
         add_embedding(embedding)
 
 
-def create_query_embedding(query: str):
+def create_query_embedding(query: str) -> list[float]:
     return embedding_model.encode(query).tolist()
 
 
-def calculate_similarity(query_embedding, chunk_embedding):
+def calculate_similarity(
+    query_embedding: list[float], chunk_embedding: list[float]
+) -> float:
     similarity = util.cos_sim(query_embedding, chunk_embedding)
 
     return similarity.item()
@@ -56,7 +60,10 @@ def semantic_search_document(document_id, query, limit: int = 5):
 
         results.append(
             SearchResult(
+                document_id=chunk.document_id,
                 filename=chunk.filename,
+                chunk_index=chunk.chunk_index,
+                total_chunks=chunk.total_chunks,
                 content=chunk.content,
                 score=score,
             )

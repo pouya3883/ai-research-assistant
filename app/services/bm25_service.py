@@ -32,7 +32,14 @@ def bm25_search(
         )
 
         results.append(
-            SearchResult(filename=chunk.filename, content=chunk.content, score=score)
+            SearchResult(
+                document_id=chunk.document_id,
+                filename=chunk.filename,
+                chunk_index=chunk.chunk_index,
+                total_chunks=chunk.total_chunks,
+                content=chunk.content,
+                score=score,
+            )
         )
 
     results.sort(key=lambda result: result.score, reverse=True)

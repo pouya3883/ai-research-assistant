@@ -3,7 +3,7 @@ from app.services.document_registry import load_documents, get_document
 from app.services.document_service import delete_document
 from fastapi import HTTPException
 from app.services.chunk_service import get_document_chunks
-from app.services.chunk_service import search_chunks, search_document_chunks
+from app.services.chunk_service import search_document_chunks
 from app.services.embedding_service import semantic_search_document
 from app.services.llm_service import answer_question
 from app.models.answer import AnswerResponse
@@ -63,11 +63,6 @@ def semantic_search(document_id: str, query: str, limit: int = 5):
     )
 
     return results
-
-
-@router.get("/search")
-def search(query: str, limit: int = 5):
-    return search_chunks(query, limit)
 
 
 @router.get("/documents/{document_id}/ask", response_model=AnswerResponse)

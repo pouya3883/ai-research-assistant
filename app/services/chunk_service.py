@@ -5,7 +5,7 @@ from app.models.chunk import DocumentChunk
 CHUNKS_DIR = Path("data/chunks")
 
 
-def get_chunk_number(file_path) -> int:
+def get_chunk_number(file_path: Path) -> int:
     return int(file_path.stem.split("_chunk_")[-1])
 
 
@@ -37,27 +37,6 @@ def count_matches(content: str, query: str) -> int:
     return content.lower().count(query.lower())
 
 
-def search_chunks(query: str, limit: int = 5) -> list[SearchResult]:
-    results = []
-
-    for file in CHUNKS_DIR.glob("*.txt"):
-        with open(file, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        if query.lower() in content.lower():
-            results.append(
-                SearchResult(
-                    filename=file.name,
-                    content=content,
-                    score=count_matches(content, query),
-                )
-            )
-
-    results.sort(key=lambda result: result.score, reverse=True)
-
-    return results[:limit]
-
-
 def search_document_chunks(
     document_id: str, query: str, limit: int = 5
 ) -> list[SearchResult]:
@@ -68,7 +47,10 @@ def search_document_chunks(
         if query.lower() in chunk.content.lower():
             results.append(
                 SearchResult(
+                    document_id=chunk.document_id,
                     filename=chunk.filename,
+                    chunk_index=chunk.chunk_index,
+                    total_chunks=chunk.total_chunks,
                     content=chunk.content,
                     score=count_matches(chunk.content, query),
                 )
