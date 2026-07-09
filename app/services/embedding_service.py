@@ -72,11 +72,3 @@ def semantic_search_document(document_id, query, limit: int = 5):
     results.sort(key=lambda result: result.score, reverse=True)
 
     return results[:limit]
-
-
-def build_context(document_id: str, query: str, limit: int = 3):
-    results = semantic_search_document(
-        document_id=document_id, query=query, limit=limit
-    )
-
-    return [result.content for result in results]

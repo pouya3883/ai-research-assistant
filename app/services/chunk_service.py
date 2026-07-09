@@ -33,6 +33,53 @@ def get_document_chunks(document_id: str) -> list[DocumentChunk]:
     return chunks
 
 
+def get_context_chunks(
+    document_id: str, chunk_index: int, window: int = 1
+) -> list[DocumentChunk]:
+    """
+    Return the requested chunk together with its neighboring chunks.
+    """
+    chunks = get_document_chunks(document_id)
+
+    if chunk_index < 0 or chunk_index >= len(chunks):
+        return []
+
+    start = max(0, chunk_index - window)
+    end = min(len(chunks), chunk_index + window + 1)
+
+    return chunks[start:end]
+
+
+def expand_context_chunks(
+    results: list[SearchResult], window: int = 1
+) -> list[DocumentChunk]:
+    expanded_chunks: dict[tuple[str, int], DocumentChunk] = {}
+
+    for result in results:
+        context_chunks = get_context_chunks(
+            document_id=result.document_id,
+            chunk_index=result.chunk_index,
+            window=window,
+        )
+
+        for chunk in context_chunks:
+            expanded_chunks[(chunk.document_id, chunk.chunk_index)] = chunk
+
+    return sorted(
+        expanded_chunks.values(),
+        key=lambda chunk: (chunk.document_id, chunk.chunk_index),
+    )
+
+
+def limit_context_chunks(
+    chunks: list[DocumentChunk], max_chunks: int
+) -> list[DocumentChunk]:
+    if len(chunks) <= max_chunks:
+        return chunks
+
+    return chunks[:max_chunks]
+
+
 def count_matches(content: str, query: str) -> int:
     return content.lower().count(query.lower())
 
