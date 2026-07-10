@@ -2,8 +2,11 @@ from pydantic import BaseModel
 
 
 class RetrievedChunk(BaseModel):
-    content: str
     source: str
+
+    chunk_index: int
+
+    content: str
 
 
 class RetrievalResult(BaseModel):

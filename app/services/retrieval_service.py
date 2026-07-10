@@ -6,7 +6,9 @@ def retrieve_context(document_id: str, question: str) -> RetrievalResult:
     context_chunks = hybrid_search_context(document_id=document_id, query=question)
 
     retrieved_chunks = [
-        RetrievedChunk(content=chunk.content, source=chunk.filename)
+        RetrievedChunk(
+            source=chunk.filename, content=chunk.content, chunk_index=chunk.chunk_index
+        )
         for chunk in context_chunks
     ]
 

@@ -27,7 +27,12 @@ def answer_question(document_id: str, question: str):
     answer = generate_answer(prompt=prompt)
 
     citations = [
-        Citation(id=index, source=chunk.source)
+        Citation(
+            id=index,
+            source=chunk.source,
+            chunk_index=chunk.chunk_index,
+            preview=chunk.content.strip().replace("\n", " ")[:200],
+        )
         for index, chunk in enumerate(retrieval.results, start=1)
     ]
 
