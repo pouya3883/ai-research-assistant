@@ -18,3 +18,5 @@ class HybridSearchResult(BaseModel):
     normalized_bm25_score: float = 0.0
 
     hybrid_score: float = 0.0
+
+    rerank_score: float = 0.0

@@ -8,6 +8,7 @@ from app.services.chunk_service import (
 )
 from app.services.bm25_service import bm25_search
 from app.services.ranking_service import normalize_scores, rank_results
+from app.services.reranking_service import rerank_results
 
 
 def hybrid_search_document(
@@ -50,6 +51,8 @@ def hybrid_search_document(
 
     results = normalize_scores(results)
     results = rank_results(results)
+
+    results = rerank_results(query=query, results=results)
 
     return results[:limit]
 

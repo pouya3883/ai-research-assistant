@@ -65,10 +65,7 @@ def expand_context_chunks(
         for chunk in context_chunks:
             expanded_chunks[(chunk.document_id, chunk.chunk_index)] = chunk
 
-    return sorted(
-        expanded_chunks.values(),
-        key=lambda chunk: (chunk.document_id, chunk.chunk_index),
-    )
+    return list(expanded_chunks.values())
 
 
 def limit_context_chunks(
