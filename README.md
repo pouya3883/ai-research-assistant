@@ -17,12 +17,16 @@ A production-style **Retrieval-Augmented Generation (RAG)** system built with **
 - [Overview](#overview)
 - [Project Goals](#project-goals)
 - [Features](#features)
+- [Project Status](#project-status)
 - [Retrieval Pipeline](#retrieval-pipeline)
 - [Architecture](#architecture)
 - [Key Design Principles](#key-design-principles)
 - [Tech Stack](#tech-stack)
+- [Testing](#testing)
 - [Project Structure](#project-structure)
+- [Code Organization](#code-organization)
 - [Design Decisions](#design-decisions)
+- [Engineering Practices](#engineering-practices)
 - [REST API](#rest-api)
 - [Getting Started](#getting-started)
 - [Current Limitations](#current-limitations)
@@ -52,6 +56,8 @@ Instead of relying solely on vector similarity, the system combines multiple ret
 
 The project is being developed incrementally with a strong focus on software engineering practices, clean architecture, maintainability, and production-oriented system design.
 
+The project is intentionally built from scratch instead of relying on existing RAG frameworks in order to better understand and implement each retrieval component independently.
+
 ---
 
 # Project Goals
@@ -71,7 +77,7 @@ This project is designed not only to build a RAG system, but also to practice an
 
 # Features
 
-Current implemented features include:
+Currently implemented features include:
 
 - ✅ PDF upload & processing
 - ✅ Automatic text extraction
@@ -84,9 +90,34 @@ Current implemented features include:
 - ✅ Hybrid ranking
 - ✅ CrossEncoder reranking
 - ✅ Context expansion
-- ✅ Retrieval-Augmented Question Answering
-- ✅ Rich source citations
+- ✅ Retrieval-Augmented Question Answering with source citations
 - ✅ Google Gemini integration
+
+---
+
+# Project Status
+
+Current implementation status:
+
+| Component                | Status |
+| ------------------------ | :----: |
+| PDF Upload               |   ✅   |
+| Chunking                 |   ✅   |
+| Embedding Generation     |   ✅   |
+| Semantic Retrieval       |   ✅   |
+| BM25 Retrieval           |   ✅   |
+| Hybrid Ranking           |   ✅   |
+| CrossEncoder Reranking   |   ✅   |
+| Context Expansion        |   ✅   |
+| Retrieval Testing        |   ✅   |
+| REST API                 |   ✅   |
+| LLM Integration          |   ✅   |
+| Unit Tests               |   ✅   |
+| Integration Tests        |   🚧   |
+| Multi-document Retrieval |   🚧   |
+| Vector Database          |   🚧   |
+| Evaluation Framework     |   🚧   |
+| CI/CD                    |   🚧   |
 
 ---
 
@@ -130,7 +161,7 @@ flowchart TD
 
 # Architecture
 
-The project follows a layered architecture where each service has a single responsibility.
+The project follows a layered architecture with clearly separated services, where each service is responsible for a single concern.
 
 ```mermaid
 flowchart TD
@@ -175,6 +206,7 @@ The retrieval pipeline is intentionally decoupled from prompt generation and LLM
 - Incremental feature development
 - Git feature-branch workflow
 - Readability over cleverness
+- Testability
 
 ---
 
@@ -194,6 +226,35 @@ The retrieval pipeline is intentionally decoupled from prompt generation and LLM
 | PDF Processing    | pypdf                                 |
 | Testing           | pytest                                |
 | Version Control   | Git & GitHub                          |
+
+---
+
+# Testing
+
+The retrieval pipeline is covered by unit tests using **pytest**.
+The tests rely heavily on mocking to isolate each retrieval component and verify its behavior independently.
+
+All retrieval services are tested independently using mocked dependencies to ensure deterministic unit tests.
+
+Current test coverage includes:
+
+- BM25 Retrieval
+- Semantic Retrieval
+- Hybrid Search
+- CrossEncoder Reranking
+- Context Expansion
+
+Run all tests:
+
+```bash
+pytest
+```
+
+Run only retrieval tests:
+
+```bash
+pytest tests/retrieval -v
+```
 
 ---
 
@@ -217,6 +278,24 @@ data/
 scripts/            # Utility & evaluation scripts
 tests/              # Unit tests
 ```
+
+---
+
+# Code Organization
+
+Business logic is intentionally isolated inside the `services` package.
+
+Each service is responsible for exactly one task.
+
+For example:
+
+- `embedding_service` → embeddings
+- `bm25_service` → keyword retrieval
+- `ranking_service` → score normalization & ranking
+- `reranking_service` → CrossEncoder reranking
+- `hybrid_search_service` → pipeline orchestration
+
+This separation keeps components reusable and easy to test independently.
 
 ---
 
@@ -265,6 +344,20 @@ The entire retrieval pipeline is orchestrated by
 
 Individual services remain responsible for only one task,
 keeping the pipeline modular and maintainable.
+
+---
+
+# Engineering Practices
+
+The project follows several engineering practices throughout development:
+
+- Small feature branches
+- Pull Request based workflow
+- Incremental implementation
+- Unit testing before merging
+- Separation of responsibilities
+- Production-oriented architecture
+- Conventional Commit messages
 
 ---
 
@@ -360,7 +453,8 @@ The current implementation intentionally has the following limitations:
 - No streaming responses
 - No conversation memory
 - No automatic retrieval evaluation metrics
-- Limited integration test coverage
+- No authentication
+- Integration tests are not yet implemented
 
 ---
 
@@ -370,10 +464,10 @@ Planned future improvements include:
 
 - Multi-document retrieval
 - Persistent vector database
-- Streaming responses
 - Metadata filtering
-- Retrieval evaluation framework
+- Retrieval evaluation framework (Recall@k, MRR, nDCG, Hit Rate)
 - Conversation memory
+- Streaming responses
 - Docker support
 - CI/CD pipeline
 - Production deployment
