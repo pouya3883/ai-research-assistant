@@ -5,13 +5,22 @@ from app.services.vector_store import add_embedding, get_document_embeddings
 from sentence_transformers import util
 from app.models.search import SearchResult
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding_model: SentenceTransformer | None = None
+
+
+def get_embedding_model() -> SentenceTransformer:
+    global embedding_model
+
+    if embedding_model is None:
+        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return embedding_model
 
 
 def create_embedding(
     document_id: str, chunk_filename: str, content: str
 ) -> DocumentEmbedding:
-    embedding_vector = embedding_model.encode(content).tolist()
+    embedding_vector = get_embedding_model().encode(content).tolist()
 
     return DocumentEmbedding(
         document_id=document_id,
@@ -34,7 +43,7 @@ def generate_document_embeddings(document_id: str):
 
 
 def create_query_embedding(query: str) -> list[float]:
-    return embedding_model.encode(query).tolist()
+    return get_embedding_model().encode(query).tolist()
 
 
 def calculate_similarity(
