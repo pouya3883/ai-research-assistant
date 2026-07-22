@@ -1,7 +1,16 @@
 from sentence_transformers import CrossEncoder
 from app.models.hybrid_search import HybridSearchResult
 
-reranking_model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+reranking_model: CrossEncoder | None = None
+
+
+def get_reranking_model() -> CrossEncoder:
+    global reranking_model
+
+    if reranking_model is None:
+        reranking_model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+    return reranking_model
 
 
 def rerank_results(
@@ -13,7 +22,7 @@ def rerank_results(
     """
     pairs = [(query, result.content) for result in results]
 
-    scores = reranking_model.predict(pairs)
+    scores = get_reranking_model().predict(pairs)
 
     for result, score in zip(results, scores):
         result.rerank_score = float(score)
