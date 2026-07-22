@@ -1,7 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from app.models.chunk import DocumentChunk
-from app.services.embedding_service import semantic_search_document
+import app.services.embedding_service as embedding_service
 
 
 def test_semantic_search_returns_most_relevant_chunk(
@@ -29,7 +29,9 @@ def test_semantic_search_returns_most_relevant_chunk(
             side_effect=[0.30, 0.95, 0.60],
         ),
     ):
-        results = semantic_search_document(document_id="doc-1", query="python")
+        results = embedding_service.semantic_search_document(
+            document_id="doc-1", query="python"
+        )
 
     assert results
     assert results[0].chunk_index == 1
@@ -60,7 +62,9 @@ def test_semantic_search_returns_results_sorted_by_score(
             side_effect=[0.30, 0.95, 0.60],
         ),
     ):
-        results = semantic_search_document(document_id="doc-1", query="python")
+        results = embedding_service.semantic_search_document(
+            document_id="doc-1", query="python"
+        )
 
     scores = [result.score for result in results]
 
@@ -90,7 +94,9 @@ def test_semantic_search_respects_limit(sample_chunks: list[DocumentChunk]) -> N
             side_effect=[0.30, 0.95, 0.60],
         ),
     ):
-        results = semantic_search_document(document_id="doc-1", query="python", limit=2)
+        results = embedding_service.semantic_search_document(
+            document_id="doc-1", query="python", limit=2
+        )
 
     assert len(results) == 2
 
@@ -112,7 +118,9 @@ def test_semantic_search_returns_empty_when_no_embeddings(
             return_value=sample_chunks,
         ),
     ):
-        results = semantic_search_document(document_id="doc-1", query="python")
+        results = embedding_service.semantic_search_document(
+            document_id="doc-1", query="python"
+        )
 
     assert results == []
 
@@ -142,8 +150,24 @@ def test_semantic_search_returns_all_results_when_exceeds_result_count(
             side_effect=[0.30, 0.95, 0.60],
         ),
     ):
-        results = semantic_search_document(
+        results = embedding_service.semantic_search_document(
             document_id="doc-1", query="python", limit=10
         )
 
     assert len(results) == 3
+
+
+def test_get_embedding_model_loads_model_only_once() -> None:
+    embedding_service.embedding_model = None
+
+    with patch(
+        "app.services.embedding_service.SentenceTransformer"
+    ) as mock_sentence_transformer:
+        mock_model = MagicMock()
+        mock_sentence_transformer.return_value = mock_model
+
+        model1 = embedding_service.get_embedding_model()
+        model2 = embedding_service.get_embedding_model()
+
+    assert model1 is model2
+    mock_sentence_transformer.assert_called_once_with("all-MiniLM-L6-v2")
