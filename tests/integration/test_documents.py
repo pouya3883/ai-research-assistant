@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_get_documents_returns_document_list(client) -> None:
     response = client.get("/documents")
 
@@ -21,3 +24,25 @@ def test_get_document_returns_404_for_unknown_document(client) -> None:
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Document not found"}
+
+
+def test_get_document_returns_existing_document(client) -> None:
+    response = client.get("/documents")
+
+    documents = response.json()
+
+    if not documents:
+        pytest.skip("No documents available for integration test.")
+
+    document_id = documents[0]["document_id"]
+
+    response = client.get(f"/documents/{document_id}")
+
+    assert response.status_code == 200
+
+    document = response.json()
+
+    assert document["document_id"] == document_id
+    assert isinstance(document["filename"], str)
+    assert isinstance(document["characters"], int)
+    assert isinstance(document["chunks"], int)
