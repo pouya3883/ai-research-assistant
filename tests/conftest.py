@@ -1,7 +1,14 @@
 import pytest
+from fastapi.testclient import TestClient
 
+from app.main import app
 from app.models.chunk import DocumentChunk
 from app.models.hybrid_search import HybridSearchResult
+
+
+@pytest.fixture
+def client():
+    return TestClient(app)
 
 
 @pytest.fixture
