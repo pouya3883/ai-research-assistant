@@ -8,18 +8,27 @@ from app.services.prompt_service import build_prompt
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+gemini_client: genai.Client | None = None
 
 
-def generate_answer(prompt: str):
-    response = client.models.generate_content(
+def get_gemini_client() -> genai.Client:
+    global gemini_client
+
+    if gemini_client is None:
+        gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+    return gemini_client
+
+
+def generate_answer(prompt: str) -> str:
+    response = get_gemini_client().models.generate_content(
         model="gemini-3.1-flash-lite", contents=prompt
     )
 
     return response.text
 
 
-def answer_question(document_id: str, question: str):
+def answer_question(document_id: str, question: str) -> AnswerResponse:
     retrieval = retrieve_context(document_id=document_id, question=question)
 
     prompt = build_prompt(question=question, retrieval=retrieval)
