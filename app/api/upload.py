@@ -6,6 +6,7 @@ from app.services.text_chunker import chunk_text
 import uuid
 from app.services.document_registry import load_documents, save_documents
 from app.services.embedding_service import generate_document_embeddings
+from pypdf.errors import PdfReadError, PdfStreamError
 
 router = APIRouter()
 
@@ -26,7 +27,12 @@ async def upload_file(file: UploadFile):
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    text = extract_text(str(file_path))
+    try:
+        text = extract_text(str(file_path))
+    except (PdfReadError, PdfStreamError):
+        file_path.unlink(missing_ok=True)
+
+        raise HTTPException(status_code=400, detail="Invalid or corrupted PDF file")
 
     chunks = chunk_text(text)
 
