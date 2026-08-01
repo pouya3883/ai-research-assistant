@@ -87,11 +87,12 @@ Currently implemented features include:
 - ✅ File-based vector storage
 - ✅ Semantic retrieval
 - ✅ BM25 retrieval
-- ✅ Hybrid ranking
+- ✅ Hybrid retrieval
 - ✅ CrossEncoder reranking
 - ✅ Context expansion
 - ✅ Retrieval-Augmented Question Answering with source citations
 - ✅ Google Gemini integration
+- ✅ Automated Testing
 
 ---
 
@@ -106,14 +107,14 @@ Current implementation status:
 | Embedding Generation     |   ✅   |
 | Semantic Retrieval       |   ✅   |
 | BM25 Retrieval           |   ✅   |
-| Hybrid Ranking           |   ✅   |
+| Hybrid Retrieval         |   ✅   |
 | CrossEncoder Reranking   |   ✅   |
 | Context Expansion        |   ✅   |
 | Retrieval Testing        |   ✅   |
 | REST API                 |   ✅   |
 | LLM Integration          |   ✅   |
 | Unit Tests               |   ✅   |
-| Integration Tests        |   🚧   |
+| Integration Tests        |   ✅   |
 | Multi-document Retrieval |   🚧   |
 | Vector Database          |   🚧   |
 | Evaluation Framework     |   🚧   |
@@ -231,12 +232,13 @@ The retrieval pipeline is intentionally decoupled from prompt generation and LLM
 
 # Testing
 
-The retrieval pipeline is covered by unit tests using **pytest**.
-The tests rely heavily on mocking to isolate each retrieval component and verify its behavior independently.
+The project follows a layered testing strategy.
 
-All retrieval services are tested independently using mocked dependencies to ensure deterministic unit tests.
+## Unit Tests
 
-Current test coverage includes:
+Unit tests cover the core retrieval pipeline and ranking logic.
+
+Current unit test coverage includes:
 
 - BM25 Retrieval
 - Semantic Retrieval
@@ -244,16 +246,22 @@ Current test coverage includes:
 - CrossEncoder Reranking
 - Context Expansion
 
-Run all tests:
+## Integration Tests
+
+Integration tests validate the FastAPI application through real HTTP requests using `TestClient`.
+
+Current integration test coverage includes:
+
+- Health Endpoint
+- Upload API
+- Documents API
+- Delete API
+- Semantic Search API
+
+Run all tests with:
 
 ```bash
 pytest
-```
-
-Run only retrieval tests:
-
-```bash
-pytest tests/retrieval -v
 ```
 
 ---
@@ -276,7 +284,11 @@ data/
 └── uploads/
 
 scripts/            # Utility & evaluation scripts
-tests/              # Unit tests
+
+tests/
+├── data/           # Test assets
+├── integration/    # API integration tests
+└── retrieval/      # Retrieval unit tests
 ```
 
 ---
@@ -375,7 +387,7 @@ Current available endpoints include:
 | DELETE | `/documents/{document_id}`                 | Delete a document                 |
 | GET    | `/documents/{document_id}/chunks`          | Retrieve document chunks          |
 | GET    | `/documents/{document_id}/semantic-search` | Semantic search                   |
-| GET    | `/documents/{document_id}/search`          | Hybrid retrieval                  |
+| GET    | `/documents/{document_id}/search`          | Keyword search                    |
 | GET    | `/documents/{document_id}/ask`             | Ask questions about a document    |
 
 ---
@@ -454,7 +466,6 @@ The current implementation intentionally has the following limitations:
 - No conversation memory
 - No automatic retrieval evaluation metrics
 - No authentication
-- Integration tests are not yet implemented
 
 ---
 
