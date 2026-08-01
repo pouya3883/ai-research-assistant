@@ -23,3 +23,10 @@ def test_delete_document_removes_existing_document(client) -> None:
 
     assert get_response.status_code == 404
     assert get_response.json() == {"detail": "Document not found"}
+
+
+def test_delete_unknown_document_returns_404(client) -> None:
+    response = client.delete("/documents/non-existent-document-id")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Document not found"}
